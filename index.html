@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test saberes previos - Competencia 220501093 - SENA ADSO</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsPDF CDN para exportar reportes en PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans min-h-screen">
+
+    <!-- Encabezado Principal -->
+    <header class="bg-green-700 text-white p-4 shadow-lg flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold">SENA - Test de saberes previos grupo 3535979</h1>
+            <p class="text-xs">Competencia 220501093: Evaluar requisitos de la solución de software de acuerdo con metodologías de análisis y estándares</p>
+        </div>
+        <div id="userInfoHeader" class="hidden text-right text-sm">
+            <span id="userNameHeader" class="font-semibold block"></span>
+            <span id="userRoleHeader" class="text-xs bg-green-900 px-2 py-0.5 rounded"></span>
+            <button onclick="logout()" class="ml-2 text-xs underline text-red-200 hover:text-white">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 max-w-4xl">
+
+        <!-- VISTA 1: REGISTRO DE USUARIOS -->
+        <section id="viewRegister" class="bg-white p-6 rounded-lg shadow-md mb-6 max-w-xl mx-auto">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Registro de Usuario</h2>
+            <form id="formRegister" onsubmit="handleRegister(event)" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Número de ID (Obligatorio)</label>
+                        <input type="number" id="regId" required class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nombre (Obligatorio)</label>
+                        <input type="text" id="regNombre" required class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Primer Apellido (Obligatorio)</label>
+                        <input type="text" id="regApellido1" required class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Segundo Apellido (Opcional)</label>
+                        <input type="text" id="regApellido2" class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Correo Electrónico (Único - Obligatorio)</label>
+                        <input type="email" id="regCorreo" required class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Teléfono (Máx. 10 dígitos)</label>
+                        <input type="text" id="regTelefono" maxlength="10" pattern="\d{1,10}" required placeholder="3001234567" class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500 outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Seleccionar Rol</label>
+                    <select id="regRol" class="w-full p-2 border rounded focus:ring-2 focus:ring-green-500 outline-none">
+                        <option value="aprendiz">Aprendiz</option>
+                        <option value="instructor">Instructor</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-green-600 text-white py-2 rounded font-semibold hover:bg-green-700 transition">
+                    Registrarse
+                </button>
+            </form>
+            <p class="mt-4 text-sm text-center text-gray-600">¿Ya tienes cuenta? <a href="#" onclick="showView('viewLogin')" class="text-blue-600 font-semibold underline">Iniciar Sesión</a></p>
+        </section>
+
+        <!-- VISTA 2: INICIO DE SESIÓN -->
+        <section id="viewLogin" class="bg-white p-6 rounded-lg shadow-md hidden max-w-md mx-auto">
+            <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Inicio de Sesión</h2>
+            <form id="formLogin" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Número de ID</label>
+                    <input type="number" id="loginId" required class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Ficha</label>
+                    <input type="text" id="loginFicha" placeholder="3535979" required class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition">
+                    Ingresar
+                </button>
+            </form>
+            <p class="mt-4 text-sm text-center text-gray-600">¿No estás registrado? <a href="#" onclick="showView('viewRegister')" class="text-blue-600 font-semibold underline">Registrarse</a></p>
+        </section>
+
+        <!-- VISTA 3: PANEL DEL APRENDIZ -->
+        <section id="viewAprendiz" class="bg-white p-6 rounded-lg shadow-md hidden">
+            <h2 class="text-xl font-bold mb-2 text-gray-800">Panel del Aprendiz</h2>
+            <p id="welcomeAprendiz" class="text-gray-700 mb-4"></p>
+
+            <!-- Privilegio especial para ID 3081539 -->
+            <div id="roleChangeContainer" class="hidden mb-6 p-4 bg-yellow-50 border border-yellow-300 rounded-lg">
+                <p class="text-sm font-semibold text-yellow-800">Privilegio especial asignado (Usuario ID 3081539):</p>
+                <p class="text-xs text-yellow-700 mb-2">Este usuario es el único autorizado por el sistema para modificar su propio rol a Instructor.</p>
+                <button onclick="promoverAInstructor()" class="bg-yellow-600 text-white px-4 py-1.5 rounded text-sm font-bold hover:bg-yellow-700 transition">
+                    Cambiar mi rol a Instructor
+                </button>
+            </div>
+
+            <div class="border-t pt-4">
+                <h3 class="font-bold text-lg text-gray-800 mb-2">Evaluación de Competencia 220501093</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                    La prueba contiene <strong>25 preguntas de selección múltiple</strong> (4 puntos cada una, total 100 puntos). La puntuación mínima de aprobación es de <strong>70 puntos</strong>. Dispones de <strong>20 minutos</strong> en conteo regresivo.
+                </p>
+                <button onclick="iniciarExamen()" class="bg-green-600 text-white px-6 py-2.5 rounded font-bold hover:bg-green-700 transition">
+                    Abrir y Contestar Evaluación (25 Preguntas)
+                </button>
+            </div>
+        </section>
+
+        <!-- VISTA 4: CUESTIONARIO DE EVALUACIÓN (25 PREGUNTAS) -->
+        <section id="viewExamen" class="bg-white p-6 rounded-lg shadow-md hidden">
+            <div class="sticky top-0 bg-white p-4 border-b flex justify-between items-center shadow-md z-20 rounded-t-lg">
+                <div>
+                    <h2 class="font-bold text-lg text-gray-800">Evaluación Competencia 220501093</h2>
+                    <p class="text-xs text-gray-500">25 Preguntas - 4 Puntos c/u (Total 100) - Aprueba con 70 pts</p>
+                </div>
+                <div class="text-red-600 font-mono font-bold text-2xl bg-red-50 px-3 py-1 rounded border border-red-200" id="timer">20:00</div>
+            </div>
+
+            <form id="formExamen" onsubmit="finalizarExamen(event)" class="mt-6 space-y-6">
+                <div id="contenedorPreguntas" class="space-y-6"></div>
+                <button type="submit" class="w-full bg-blue-700 text-white py-3 rounded-lg font-bold text-lg hover:bg-blue-800 transition shadow">
+                    Finalizar y Enviar Evaluación
+                </button>
+            </form>
+        </section>
+
+        <!-- VISTA 5: RESULTADOS DEL APRENDIZ -->
+        <section id="viewResultados" class="bg-white p-6 rounded-lg shadow-md hidden text-center">
+            <h2 class="text-2xl font-bold text-green-700 mb-2">¡Evaluación Finalizada!</h2>
+            <p id="scoreText" class="text-xl font-semibold mb-2 text-gray-800"></p>
+            <p id="statusText" class="text-lg font-bold mb-6"></p>
+            <button onclick="descargarPDFResultado()" class="bg-red-600 text-white px-6 py-2.5 rounded font-bold hover:bg-red-700 transition shadow inline-flex items-center gap-2">
+                📄 Descargar Resultados en PDF
+            </button>
+        </section>
+
+        <!-- VISTA 6: PANEL DEL INSTRUCTOR -->
+        <section id="viewInstructor" class="bg-white p-6 rounded-lg shadow-md hidden">
+            <h2 class="text-xl font-bold mb-2 text-gray-800">Panel del Instructor</h2>
+            <p id="welcomeInstructor" class="text-gray-700 mb-6"></p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-5 border rounded-lg bg-gray-50 text-center shadow-sm hover:shadow transition">
+                    <h3 class="font-bold text-gray-800 mb-2">1. Examen Completo (PDF con Margen 3 cm)</h3>
+                    <p class="text-xs text-gray-600 mb-4">Descarga el cuestionario de 25 preguntas con un margen lateral exacto de 3 cm a cada lado.</p>
+                    <button onclick="descargarPDFExamen()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-blue-700 transition">
+                        Descargar Examen en PDF
+                    </button>
+                </div>
+                <div class="p-5 border rounded-lg bg-gray-50 text-center shadow-sm hover:shadow transition">
+                    <h3 class="font-bold text-gray-800 mb-2">2. Consolidado de Usuarios (PDF)</h3>
+                    <p class="text-xs text-gray-600 mb-4">Descarga la lista consolidada de resultados y calificaciones guardadas en el sistema.</p>
+                    <button onclick="descargarPDFConsolidado()" class="bg-green-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-green-700 transition">
+                        Descargar Resultados (PDF)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BASE DE DATOS Y LÓGICA DE APLICACIÓN EN EL NAVEGADOR -->
+    <script>
+        // Base de Datos en el Navegador (localStorage)
+        let usuarios = JSON.parse(localStorage.getItem('sena_db_usuarios')) || [];
+        let resultados = JSON.parse(localStorage.getItem('sena_db_resultados')) || [];
+        let usuarioActual = null;
+        let timerInterval = null;
+        let tiempoRestante = 1200; // 20 minutos en segundos
+
+        const FICHA_OBLIGATORIA = "3535979";
+
+        // Banco de 25 Preguntas redactadas para la Competencia 220501093
+        const bancoPreguntas = [
+            { id: 1, q: "¿Cuál es el propósito principal del modelado de casos de uso en la fase de análisis de software?", a: ["Representar los requisitos funcionales desde la perspectiva de los actores del sistema", "Diseñar la estructura física de la base de datos relacional", "Escribir el código fuente ejecutable del sistema", "Definir los parámetros de red e infraestructura física"], c: 0 },
+            { id: 2, q: "En el estándar UML, ¿qué representa la relación <<extend>> entre dos casos de uso?", a: ["Una inclusión obligatoria e incondicional del flujo secundario", "Un comportamiento opcional o condicional que amplía el caso de uso base", "Una relación de herencia entre clases abstractas", "La ejecución simultánea de dos hilos de procesamiento"], c: 1 },
+            { id: 3, q: "En la metodología RUP (Proceso Unificado Racional), ¿cuál es el objetivo fundamental de la fase de Inicio (Inception)?", a: ["Codificar todos los módulos finales del proyecto", "Establecer el alcance del negocio, riesgos principales y la arquitectura candidata", "Realizar el despliegue final en el entorno de producción", "Ejecutar las pruebas unitarias de aceptación de código"], c: 1 },
+            { id: 4, q: "¿Qué artefacto del marco Scrum contiene la lista priorizada de todos los requisitos funcionales deseados por el cliente?", a: ["Sprint Backlog", "Product Backlog", "Incremento de Software", "Diagrama de Gantt"], c: 1 },
+            { id: 5, q: "En el modelo Entidad-Relación (E-R), ¿qué representa una Clave Primaria (Primary Key)?", a: ["Un campo secundario no obligatorio", "Un atributo o conjunto de atributos que identifica de manera única a cada entidad", "Una relación de muchos a muchos entre dos tablas", "Un método de ordenamiento temporal"], c: 1 },
+            { id: 6, q: "¿Qué diferencia clave existe entre las metodologías de análisis tradicionales (RUP) y las ágiles (Scrum)?", a: ["Las tradicionales son adaptativas y las ágiles son rígidas", "Las tradicionales priorizan la documentación exhaustiva previa; las ágiles priorizan entregas iterativas y adaptabilidad", "Las tradicionales no utilizan diagramas de casos de uso", "Las ágiles prohíben la interacción constante con el cliente"], c: 1 },
+            { id: 7, q: "En la especificación de un caso de uso, ¿dónde se describen los pasos normales cuando todo ocurre sin errores?", a: ["Flujos Alternativos", "Precondiciones", "Flujo Básico / Principal", "Postcondiciones"], c: 2 },
+            { id: 8, q: "¿Qué diferencia existe entre Agregación (rombo hueco) y Composición (rombo lleno) en UML?", a: ["En la agregación la destrucción del todo destruye las partes; en la composición no", "En la agregación la parte tiene ciclo de vida independiente del todo; en la composición la vida de la parte depende del todo", "No existe diferencia conceptual entre ambas", "La composición aplica únicamente a variables primitivas"], c: 1 },
+            { id: 9, q: "En un Diagrama de Actividades UML, ¿cuál es la función de las líneas de carril o nadadores (Swimlanes)?", a: ["Asignar la responsabilidad de cada actividad a un actor, área o módulo específico", "Medir el tiempo exacto de procesamiento en segundos", "Establecer la conexión con la base de datos SQL", "Representar las variables globales del algoritmo"], c: 0 },
+            { id: 10, q: "En el Modelo Entidad-Relación, una relación de 'Muchos a Muchos' (M:N) entre dos entidades se resuelve en el modelo relacional mediante:", a: ["Una tabla intermedia o asociativa que contiene las claves primarias de ambas entidades", "Eliminando una de las entidades del modelo conceptual", "Agregando un atributo multivaluado simple", "Creando un campo de texto largo no estructurado"], c: 0 },
+            { id: 11, q: "Para que una tabla de base de datos cumpla con la Primera Forma Normal (1FN), se requiere que:", a: ["Todos los atributos sean atómicos y no existan grupos repetitivos", "No existan dependencias transitivas entre columnas", "Tenga una sola columna como clave primaria compuesta", "No contenga registros duplicados en ningún campo"], c: 0 },
+            { id: 12, q: "¿Qué principio garantiza la Integridad Referencial en una base de datos relacional?", a: ["Garantizar que toda clave foránea coincida con un valor de clave primaria existente o sea nula", "Permitir valores clave foráneos inexistentes", "Evitar el uso de índices de búsqueda", "Exportar la base de datos a formato de hoja de cálculo"], c: 0 },
+            { id: 13, q: "Dadas las proposiciones P = Verdadero y Q = Falso, ¿cuál es el resultado de la conjunción lógica (P ∧ Q)?", a: ["Verdadero", "Falso", "Indeterminado", "Nulo"], c: 1 },
+            { id: 14, q: "La tabla de verdad de la condicional o implicación (P → Q) es Falsa únicamente cuando:", a: ["P es Verdadera y Q es Falsa", "P es Falsa y Q es Verdadera", "Ambas son Verdaderas", "Ambas son Falsas"], c: 0 },
+            { id: 15, q: "En lógica algorítmica, ¿cuál es la característica diferencial de la estructura repetitiva Repetir-Hasta (Do-While) respecto al Mientras (While)?", a: ["Evalúa la condición al final, garantizando que el bloque se ejecute al menos una vez", "Evalúa la condición al inicio antes de entrar al bloque", "Solo funciona con números reales de punto flotante", "No permite modificar las variables contadoras"], c: 0 },
+            { id: 16, q: "En programación estructurada y modular, una Función se diferencia de un Procedimiento en que:", a: ["La función retorna un valor explícito al punto de llamada; el procedimiento no retorna valor", "El procedimiento solo puede llamarse una vez en el código", "La función no acepta parámetros de entrada", "No hay ninguna diferencia técnica entre ambas"], c: 0 },
+            { id: 17, q: "¿Qué estructura de datos unidimensional almacena elementos homogéneos secuenciales bajo un mismo nombre y accesibles por un índice?", a: ["Vector o Arreglo (Array)", "Matriz tridimensional", "Archivo plano de texto", "Pila dinámica de objetos"], c: 0 },
+            { id: 18, q: "En el análisis de requisitos, una Matriz de Trazabilidad sirve principalmente para:", a: ["Mapear y verificar que cada requisito esté vinculado con sus modelos de diseño, pruebas y casos de uso", "Estimar el presupuesto salarial del equipo de desarrollo", "Diseñar los logotipos publicitarios de la aplicación", "Generar automáticamente la documentación de instalación"], c: 0 },
+            { id: 19, q: "Las herramientas CASE (Computer-Aided Software Engineering) de análisis permiten:", a: ["Automatizar el dibujo, validación de consistencia y generación de documentación de modelos UML y E-R", "Reemplazar completamente el trabajo de los ingenieros de requisitos", "Dar mantenimiento físico a los servidores de red", "Instalar el sistema operativo en las computadoras clientes"], c: 0 },
+            { id: 20, q: "En el análisis orientado a objetos, el principio de 'Bajo Acoplamiento' busca:", a: ["Minimizar las interdependencias entre módulos para facilitar el mantenimiento y la reutilización", "Aumentar el número de conexiones globales directas entre todas las clases", "Eliminar todas las clases de interfaz gráfica", "Crear una sola clase que contenga todo el código del programa"], c: 0 },
+            { id: 21, q: "En la técnica de priorización MoSCoW, las siglas representan los niveles:", a: ["Must have, Should have, Could have, Won't have", "Master, Senior, Coder, Worker", "Model, Service, Control, Web", "Main, Secondary, Critical, Optional"], c: 0 },
+            { id: 22, q: "¿Qué representa la 'Postcondición' en la especificación extendida de un caso de uso?", a: ["El estado garantizado en que debe quedar el sistema tras la ejecución exitosa del caso de uso", "La verificación del rol de usuario antes de iniciar", "El informe de errores de conexión con el servidor", "Las restricciones de hardware del cliente"], c: 0 },
+            { id: 23, q: "En la validación de análisis con los clientes, la elaboración de 'Prototipos Iniciales' permite:", a: ["Validar oportunamente con el usuario el flujo y la interfaz esperados antes de la codificación", "Sustituir la base de datos relacional por archivos temporales", "Omitir la fase de pruebas de software", "Aumentar los costos de desarrollo sin valor agregado"], c: 0 },
+            { id: 24, q: "¿Qué es un 'Diccionario de Datos' en la fase de análisis?", a: ["Un catálogo estructurado que define los tipos, formatos, longitudes y restricciones de cada dato en el sistema", "Un manual para aprender la sintaxis de SQL", "Una lista de contraseñas de los usuarios", "Un glosario de términos idiomáticos para traducción"], c: 0 },
+            { id: 25, q: "¿Cuál es la función del 'Modelo de Dominio' en el análisis de software?", a: ["Capturar los conceptos, entidades y relaciones del mundo real del problema sin detalles de implementación tecnológica", "Diseñar los botones y estilos CSS de las pantallas", "Escribir las consultas SQL finales para el motor de base de datos", "Definir los planes de mantenimiento de hardware"], c: 0 }
+        ];
+
+        function showView(viewId) {
+            ['viewRegister', 'viewLogin', 'viewAprendiz', 'viewExamen', 'viewResultados', 'viewInstructor'].forEach(v => {
+                document.getElementById(v).classList.add('hidden');
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const id = document.getElementById('regId').value.trim();
+            const nombre = document.getElementById('regNombre').value.trim();
+            const apellido1 = document.getElementById('regApellido1').value.trim();
+            const apellido2 = document.getElementById('regApellido2').value.trim();
+            const correo = document.getElementById('regCorreo').value.trim().toLowerCase();
+            const telefono = document.getElementById('regTelefono').value.trim();
+            const rol = document.getElementById('regRol').value;
+
+            // Validación de unicidad de ID
+            if (usuarios.some(u => u.id === id)) {
+                alert("Error: El número de ID ingresado ya se encuentra registrado.");
+                return;
+            }
+
+            // CORRECCIÓN SOLICITADA: Validación de unicidad de correo electrónico
+            if (usuarios.some(u => u.correo.toLowerCase() === correo)) {
+                alert("Error: El correo electrónico ya se encuentra registrado. Los correos deben ser únicos.");
+                return;
+            }
+
+            const nuevoUsuario = { id, nombre, apellido1, apellido2, correo, telefono, rol };
+            usuarios.push(nuevoUsuario);
+            localStorage.setItem('sena_db_usuarios', JSON.stringify(usuarios));
+            alert("Registro guardado exitosamente en el sistema. Procede a iniciar sesión.");
+            showView('viewLogin');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const id = document.getElementById('loginId').value.trim();
+            const ficha = document.getElementById('loginFicha').value.trim();
+
+            const user = usuarios.find(u => u.id === id);
+
+            if (!user) {
+                alert("Error: Usuario no encontrado en el sistema. Regístrate primero.");
+                return;
+            }
+
+            if (user.rol === 'aprendiz' && ficha !== FICHA_OBLIGATORIA) {
+                alert("Error: Número de ficha incorrecto. Debe ser 3535979 para todos los aprendices.");
+                return;
+            }
+
+            usuarioActual = user;
+            updateHeader();
+
+            if (user.rol === 'instructor') {
+                document.getElementById('welcomeInstructor').innerText = `Bienvenido(a) Instructor(a): ${user.nombre} ${user.apellido1} ${user.apellido2 || ''}`;
+                showView('viewInstructor');
+            } else {
+                document.getElementById('welcomeAprendiz').innerText = `Bienvenido(a) Aprendiz: ${user.nombre} ${user.apellido1} ${user.apellido2 || ''} | ID: ${user.id}`;
+                
+                // Privilegio exclusivo para ID 3081539
+                if (user.id === '3081539') {
+                    document.getElementById('roleChangeContainer').classList.remove('hidden');
+                } else {
+                    document.getElementById('roleChangeContainer').classList.add('hidden');
+                }
+
+                showView('viewAprendiz');
+            }
+        }
+
+        function promoverAInstructor() {
+            if (usuarioActual && usuarioActual.id === '3081539') {
+                usuarioActual.rol = 'instructor';
+                const idx = usuarios.findIndex(u => u.id === '3081539');
+                if (idx !== -1) usuarios[idx].rol = 'instructor';
+                localStorage.setItem('sena_db_usuarios', JSON.stringify(usuarios));
+                alert("Privilegio activado: Tu rol ha sido modificado a INSTRUCTOR.");
+                updateHeader();
+                document.getElementById('welcomeInstructor').innerText = `Bienvenido(a) Instructor(a): ${usuarioActual.nombre} ${usuarioActual.apellido1}`;
+                showView('viewInstructor');
+            }
+        }
+
+        function updateHeader() {
+            document.getElementById('userInfoHeader').classList.remove('hidden');
+            document.getElementById('userNameHeader').innerText = `${usuarioActual.nombre} ${usuarioActual.apellido1}`;
+            document.getElementById('userRoleHeader').innerText = usuarioActual.rol.toUpperCase();
+        }
+
+        function logout() {
+            usuarioActual = null;
+            clearInterval(timerInterval);
+            document.getElementById('userInfoHeader').classList.add('hidden');
+            showView('viewLogin');
+        }
+
+        function iniciarExamen() {
+            showView('viewExamen');
+            tiempoRestante = 1200; // 20 minutos
+            const container = document.getElementById('contenedorPreguntas');
+            container.innerHTML = '';
+
+            bancoPreguntas.forEach((p, index) => {
+                const div = document.createElement('div');
+                div.className = 'p-4 border rounded-lg bg-gray-50 shadow-sm';
+                div.innerHTML = `
+                    <p class="font-semibold text-gray-800 mb-3"><span class="text-green-700 font-bold">${index + 1}.</span> ${p.q}</p>
+                    <div class="space-y-2">
+                        ${p.a.map((opt, oIdx) => `
+                            <label class="flex items-start p-2 border rounded bg-white hover:bg-green-50 cursor-pointer transition text-sm">
+                                <input type="radio" name="p_${p.id}" value="${oIdx}" required class="mt-1 mr-3 text-green-600 focus:ring-green-500">
+                                <span>${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            // Conteo Regresivo de 20 minutos
+            timerInterval = setInterval(() => {
+                tiempoRestante--;
+                let m = Math.floor(tiempoRestante / 60);
+                let s = tiempoRestante % 60;
+                document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+
+                if (tiempoRestante <= 0) {
+                    clearInterval(timerInterval);
+                    alert("¡El tiempo de 20 minutos ha finalizado! Se enviarán tus respuestas automáticamente.");
+                    document.getElementById('formExamen').requestSubmit();
+                }
+            }, 1000);
+        }
+
+        function finalizarExamen(e) {
+            e.preventDefault();
+            clearInterval(timerInterval);
+
+            let correctas = 0;
+            bancoPreguntas.forEach(p => {
+                const selected = document.querySelector(`input[name="p_${p.id}"]:checked`);
+                if (selected && parseInt(selected.value) === p.c) {
+                    correctas++;
+                }
+            });
+
+            // Cada pregunta vale 4 puntos (25 * 4 = 100)
+            const puntaje = correctas * 4;
+            const aprobado = puntaje >= 70;
+
+            const resObj = {
+                userId: usuarioActual.id,
+                nombre: `${usuarioActual.nombre} ${usuarioActual.apellido1} ${usuarioActual.apellido2 || ''}`,
+                correo: usuarioActual.correo,
+                telefono: usuarioActual.telefono,
+                correctas,
+                total: 25,
+                puntaje: puntaje,
+                aprobado: aprobado,
+                fecha: new Date().toLocaleString()
+            };
+
+            resultados.push(resObj);
+            localStorage.setItem('sena_db_resultados', JSON.stringify(resultados));
+
+            document.getElementById('scoreText').innerText = `Respuestas Correctas: ${correctas} / 25 — Puntaje Final: ${puntaje} / 100 pts`;
+            const statusElem = document.getElementById('statusText');
+            if (aprobado) {
+                statusElem.innerText = "Estado: APROBADO (≥70 pts)";
+                statusElem.className = "text-lg font-bold mb-6 text-green-600";
+            } else {
+                statusElem.innerText = "Estado: NO APROBADO (<70 pts)";
+                statusElem.className = "text-lg font-bold mb-6 text-red-600";
+            }
+
+            showView('viewResultados');
+        }
+
+        // Generación de PDF de Resultados del Aprendiz
+        function descargarPDFResultado() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const ultimoRes = resultados[resultados.length - 1];
+
+            doc.setFontSize(16);
+            doc.text("SENA - Reporte Individual de Evaluación", 14, 20);
+            doc.setFontSize(11);
+            doc.text(`Aprendiz: ${usuarioActual.nombre} ${usuarioActual.apellido1} ${usuarioActual.apellido2 || ''}`, 14, 32);
+            doc.text(`ID Documento: ${usuarioActual.id}`, 14, 40);
+            doc.text(`Correo Electrónico: ${usuarioActual.correo}`, 14, 48);
+            doc.text(`Teléfono: ${usuarioActual.telefono}`, 14, 56);
+            doc.text(`Competencia: 220501093 - Evaluar requisitos de la solución de software`, 14, 64);
+            doc.text(`Fecha de Realización: ${ultimoRes.fecha}`, 14, 72);
+            doc.line(14, 78, 196, 78);
+
+            doc.setFontSize(14);
+            doc.text(`Aciertos: ${ultimoRes.correctas} de 25 preguntas`, 14, 90);
+            doc.text(`Puntuación Obtenida: ${ultimoRes.puntaje} / 100 Puntos`, 14, 100);
+            doc.text(`Resultado: ${ultimoRes.aprobado ? 'APROBADO' : 'NO APROBADO'} (Mínimo de aprobación: 70 pts)`, 14, 110);
+
+            doc.save(`Resultado_SENA_${usuarioActual.id}.pdf`);
+        }
+
+        // CORRECCIÓN SOLICITADA: PDF del Examen con MARGEN EXACTO DE 3 CM (30 mm) a cada lado
+        function descargarPDFExamen() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4'); // Unidades en mm
+
+            // Configuración estricta de márgenes: 3 cm = 30 mm a cada lado
+            const marginLeft = 30;  // 3 cm margen izquierdo
+            const printableWidth = 150; // Ancho utilizable (210 mm ancho A4 - 30 mm izq - 30 mm der)
+            let y = 20;
+
+            doc.setFontSize(13);
+            doc.setFont("helvetica", "bold");
+            doc.text("SENA ADSO - Examen Competencia 220501093", marginLeft, y, { maxWidth: printableWidth });
+            y += 7;
+
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text("Evaluación de 25 preguntas (4 pts c/u - Total: 100 pts). Aprobación: ≥70 pts.", marginLeft, y, { maxWidth: printableWidth });
+            y += 10;
+            doc.line(marginLeft, y - 3, marginLeft + printableWidth, y - 3);
+
+            bancoPreguntas.forEach((p, i) => {
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "bold");
+                
+                // Texto de la pregunta ajustado a 150 mm (margen de 3 cm a cada lado)
+                const textQuestion = `${i + 1}. ${p.q}`;
+                const qLines = doc.splitTextToSize(textQuestion, printableWidth);
+                
+                if (y + (qLines.length * 4) > 275) { doc.addPage(); y = 20; }
+                doc.text(qLines, marginLeft, y);
+                y += qLines.length * 4.5 + 1;
+
+                doc.setFont("helvetica", "normal");
+                p.a.forEach((opt, oIdx) => {
+                    const textOpt = `   [${oIdx === p.c ? 'X' : ' '}] ${opt}`;
+                    const optLines = doc.splitTextToSize(textOpt, printableWidth - 5);
+                    if (y + (optLines.length * 4) > 275) { doc.addPage(); y = 20; }
+                    doc.text(optLines, marginLeft + 2, y);
+                    y += optLines.length * 4 + 1;
+                });
+                y += 3;
+            });
+
+            doc.save("Cuestionario_Competencia_220501093_3cm.pdf");
+        }
+
+        function descargarPDFConsolidado() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "bold");
+            doc.text("SENA ADSO - Consolidado General de Resultados", 14, 15);
+            let y = 25;
+
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "bold");
+            doc.text("ID | Nombre | Aciertos | Puntaje/100 | Estado | Fecha", 10, y);
+            y += 5;
+            doc.line(10, y, 200, y);
+            y += 6;
+
+            doc.setFont("helvetica", "normal");
+            if (resultados.length === 0) {
+                doc.text("No se han registrado resultados de evaluaciones aún.", 10, y);
+            } else {
+                resultados.forEach(r => {
+                    if (y > 270) { doc.addPage(); y = 15; }
+                    const estado = r.aprobado ? 'APROBADO' : 'NO APROBADO';
+                    doc.text(`${r.userId} | ${r.nombre} | ${r.correctas}/25 | ${r.puntaje} pts | ${estado} | ${r.fecha}`, 10, y);
+                    y += 6;
+                });
+            }
+
+            doc.save("Consolidado_Resultados_Aprendices_SENA.pdf");
+        }
+    </script>
+</body>
+</html>
